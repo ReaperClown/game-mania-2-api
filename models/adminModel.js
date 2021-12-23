@@ -31,7 +31,7 @@ const adminSchema = new mongoose.Schema(
       default: '',
     }
   },
-  { timestamps: true } //to include createdAt and updatedAt
+  { timestamps: true } //inclui createdAt e updatedAt
 );
 
 module.exports = mongoose.model("Admin", adminSchema);

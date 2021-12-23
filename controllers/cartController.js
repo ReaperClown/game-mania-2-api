@@ -13,13 +13,13 @@ exports.createOrder = async (req, res, next) => {
 
   try {
     const stock = await Product.findById(newOrder.product);
-    if (newOrder.quantity > stock.quantity) return res.status(200).send({ message: "Product is out of stock" });
+    if (newOrder.quantity > stock.quantity) return res.status(200).send({ message: "Produto fora de estoque" });
     const product = await Cart.create(newOrder);
     const update = { quantity: stock.quantity - newOrder.quantity };
     await Product.findByIdAndUpdate(stock.id, update, { new: true });
-    return res.status(200).send({ message: "Order created successfully!", product });
+    return res.status(200).send({ message: "Pedido realizado com sucesso!", product });
   } catch (error) {
-    return res.status(400).send({ message: "unable to create order", error });
+    return res.status(400).send({ message: "Não foi possível realizar o pedido.", error });
   }
 };
 
@@ -27,9 +27,9 @@ exports.getOrder = async (req, res, next) => {
   await Cart.findById(req.params.cartId)
     .populate("product", "productImage name price")
     .exec((err, cart) => {
-      if (err) return res.status(400).send({ message: "showing order", err });
+      if (err) return res.status(400).send({ message: "pedido: ", err });
       const order = returnOrder(cart);
-      return res.status(200).send({ message: "showing order", order });
+      return res.status(200).send({ message: "pedido: ", order });
     });
 };
 

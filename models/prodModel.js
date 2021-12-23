@@ -30,7 +30,7 @@ const productSchema = mongoose.Schema(
       default: 1,
     }
   },
-  { timestamps: true } //to include createdAt and updatedAt
+  { timestamps: true } //inclui createdAt e updatedAt
 );
 productSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model("Product", productSchema);

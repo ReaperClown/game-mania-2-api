@@ -9,18 +9,18 @@ const MASTER_KEY = process.env.MASTER_KEY;
 const { registerValidation, loginValidation } = require("../middleware/validation");
 
 
-// signup
+// registro
 exports.signUp = async (req, res, next) => {
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const emailExist = await Admin.findOne({ email: req.body.email });
-  if (emailExist) return res.status(400).send("email  already exist");
+  if (emailExist) return res.status(400).send("Este email já existe.");
 
   try {
     const newAdmin = await createAdmin(req);
     const savedAdmin = await newAdmin.save(); 
-    return res.status(200).send({ message: "User created successfully!", user: savedAdmin  });
+    return res.status(200).send({ message: "Usuário criado com sucesso!", user: savedAdmin  });
   } catch (error) {
     return res.status(400).send(error);
   }
@@ -31,14 +31,14 @@ exports.logIn = async (req, res) => {
   const { error } = loginValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const foundAdmin = await Admin.findOne({ email: req.body.email }); //returns the first document that matches the query criteria or null
-  if (!foundAdmin) return res.status(400).send({ message: "Email is not found" });
+  const foundAdmin = await Admin.findOne({ email: req.body.email }); //retorna o primeiro documento que corresponde aos critérios de consulta ou null
+  if (!foundAdmin) return res.status(400).send({ message: "Email não encontrado" });
 
   try {
     const isMatch = await bcrypt.compareSync(req.body.password, foundAdmin.password);
-    if (!isMatch) return res.status(400).send({ message: "invalid password" });
+    if (!isMatch) return res.status(400).send({ message: "Senha inválida" });
 
-    // create and assign jwt
+    // cria e atribui jwt
     const token = await jwt.sign({ _id: foundAdmin._id }, MASTER_KEY);
     
     return res.status(200).header("admin-token", token).send({ "admin-token": token });
@@ -46,42 +46,42 @@ exports.logIn = async (req, res) => {
     return res.status(400).send(error);
   }
 };
-// Update admin
+// Atualizar admin
 exports.updateAdmin = async (req, res) => {
   try {
 
-    req.body.password = await bcrypt.hashSync(req.body.password, 10); //encrypt the password before updating
+    req.body.password = await bcrypt.hashSync(req.body.password, 10); //criptografa a senha antes de salvá-la
     const updatedAdmin = await Admin.findByIdAndUpdate(req.params.userId, { $set: req.body }, { new: true });
 
     if (!updatedAdmin) {
-      return res.status(400).send({ message: "Could not update user" });
+      return res.status(400).send({ message: "Não foi possível atualizar o usuário." });
     }
-    return res.status(200).send({ message: "User updated successfully", updatedUser});
+    return res.status(200).send({ message: "Usuário atualizado com sucesso!", updatedUser});
 
   } catch (error) {
-    return res.status(400).send({ error: "An error has occurred, unable to update user" });
+    return res.status(400).send({ error: "Ocorreu um erro inesperado, não foi possível atualizar o usuário." });
   }
 };
 
-// Delete user
+// Deletar usuário
 exports.deleteAdmin = async (req, res) => {
   try {
-    const deletedAdmin = await Admin.findByIdAndDelete({ _id: req.params.userId}); // the `await` is very important here!
+    const deletedAdmin = await Admin.findByIdAndDelete({ _id: req.params.userId}); // await para garantir a remoção correta e evitar erros
 
     if (!deletedAdmin) {
-      return res.status(400).send({ message: "Could not delete user" });
+      return res.status(400).send({ message: "Não foi possível remover o usuário." });
     }
-    return res.status(200).send({ message: "User deleted successfully", user: deletedAdmin});
+    return res.status(200).send({ message: "Usuário removido com sucesso.", user: deletedAdmin});
   } catch (error) {
-    return res.status(400).send({ error: "An error has occurred, unable to delete user" });
+    return res.status(400).send({ error: "Ocorreu um erro inesperado, não foi possível remover o usuário." });
   }
 };
 
 exports.data = async (req, res) => {
   return res.json({
     posts: {
-      title: "Admin Authentication",
-      discription: "random data you can access because you\'re authenticated",
+      title: "Autenticação de Administrador",
+      discription: "Dados que só podem ser vistos devido à autenticação",
     },
   });
 };

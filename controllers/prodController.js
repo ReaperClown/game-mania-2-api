@@ -15,10 +15,10 @@ exports.createProduct = async (req, res, next) => {
     };
     //const newProduct = await createProductObj(req);
     const product = await Product.create(newProduct);
-    return res.status(200).send({ message: "User created successfully!", product });
+    return res.status(200).send({ message: "Produto adicionado com sucesso!", product });
   } catch (error) {
-    if (error.code === 11000) return res.status(200).send({ message: "product already exist" });
-    return res.status(400).send({ message: "unable to create product", error });
+    if (error.code === 11000) return res.status(200).send({ message: "Este produto já existe no catálogo." });
+    return res.status(400).send({ message: "Não foi possível adicionar o produto.", error });
   }
 };
 
@@ -34,7 +34,7 @@ exports.getProducts = (req, res, next) => {
   const size = 3;
  
   if (pageNo <= 0 ) {
-    return res.status(200).send({ error: true, message: "invalid page number" });
+    return res.status(200).send({ error: true, message: "Numeração de página inválida." });
   }
 
   const query = {
@@ -46,8 +46,8 @@ exports.getProducts = (req, res, next) => {
     .select("-_id -__v -updatedAt")
     .populate("category", "-_id name")
     .exec((err, products) => {
-      if (err) return res.status(400).send({ message: "showing order", err });
-      return res.status(200).send({ message: "showing all orders in the cart", products });
+      if (err) return res.status(400).send({ message: "pedido: ", err });
+      return res.status(200).send({ message: "todos os pedidos no carrinho", products });
     });
 };
 

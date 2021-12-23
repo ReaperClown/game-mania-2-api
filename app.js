@@ -17,20 +17,19 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
 
-// Routes which should handle requests
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument)); //still working on it
+// Rotas que lidarão com as requisições
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument)); // <-- Documentação da API
 app.use("/product", productRoute);
 app.use("/category", categoryRoute);
 app.use("/cart", cartRoute);
 app.use("/admin", adminRoute);
 app.use("/user", userRoute);
-// Handle Error Requests
 
 app.get("/", (req, res) => {
-  res.send('API ESTÁ OPERANDO, acesse "/docs" pela url raiz para a documentação da API');
+  res.send('A API ESTÁ OPERANDO, acesse "/docs" pela url raiz para a documentação da API');
 });
 
-// Handle Error Requests
+// Tratamento de erros
 app.use((req, res, next) => {
   const error = new Error();
   error.message = "Não Encontrado";

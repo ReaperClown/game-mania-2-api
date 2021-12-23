@@ -14,15 +14,15 @@ exports.signUp = async (req, res, next) => {
   const { error, value } = registerValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const emailExist = await User.findOne({ email: req.body.email }); //returns the first document that matches the query criteria or null
-  if (emailExist) return res.status(400).send({ message: "Email already exist!" });
+  const emailExist = await User.findOne({ email: req.body.email }); //retorna o primeiro documento que corresponde aos critérios de consulta ou null
+  if (emailExist) return res.status(400).send({ message: "Este email já existe." });
 
   try {
     const newUser = await createUserObj(req);
     const savedUser = await User.create(newUser);
-    return res.status(200).send({ message: "User created successfully!", user: savedUser });
+    return res.status(200).send({ message: "Usuário criado com sucesso!", user: savedUser });
   } catch (err) {
-    return res.status(400).send({ error: "User created successfully!", error: err });
+    return res.status(400).send({ error: "Usuário criado com sucesso!", error: err });
   }
 };
 
@@ -31,12 +31,12 @@ exports.logIn = async (req, res) => {
   const { error } = loginValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const foundUser = await User.findOne({ email: req.body.email }); //returns the first document that matches the query criteria or null
-  if (!foundUser) return res.status(400).send({ message: "invalid login credential" });
+  const foundUser = await User.findOne({ email: req.body.email }); //retorna o primeiro documento que corresponde aos critérios de consulta ou null
+  if (!foundUser) return res.status(400).send({ message: "Credenciais de login incorretas" });
 
   try {
     const isMatch = await bcrypt.compareSync(req.body.password, foundUser.password);
-    if (!isMatch) return res.status(400).send({ message: "invalid login credential" });
+    if (!isMatch) return res.status(400).send({ message: "Credenciais de login incorretas" });
 
     // create and assign jwt
     const token = await jwt.sign({ _id: foundUser._id }, JWT_KEY);
@@ -50,38 +50,38 @@ exports.logIn = async (req, res) => {
 // Update user
 exports.updateUser = async (req, res) => {
   try {
-    req.body.password = bcrypt.hashSync(req.body.password, 10); //encrypt the password before updating
+    req.body.password = bcrypt.hashSync(req.body.password, 10); //criptografa a senha antes de salvá-la
     const updatedUser = await User.findByIdAndUpdate(req.params.userId, { $set: req.body }, { new: true });
 
     if (!updatedUser) {
-      return res.status(400).send({ message: "Could not update user" });
+      return res.status(400).send({ message: "Não foi possível atualizar o usuário." });
     }
-    return res.status(200).send({ message: "User updated successfully", updatedUser });
+    return res.status(200).send({ message: "Usuário atualizado com sucesso!", updatedUser });
 
   } catch (error) {
-    return res.status(400).send({ error: "An error has occurred, unable to update user" });
+    return res.status(400).send({ error: "Ocorreu um erro inesperado, não foi possível atualizar o usuário." });
   }
 };
 
 // Delete user
 exports.deleteUser = async (req, res) => {
   try {
-    const deletedUser = await User.findByIdAndDelete(req.params.userId); // the `await` is very important here!
+    const deletedUser = await User.findByIdAndDelete(req.params.userId); // await para garantir a remoção correta e evitar erros
 
     if (!deletedUser) {
-      return res.status(400).send({ message: "Could not delete user" });
+      return res.status(400).send({ message: "Não foi possível remover o usuário." });
     }
-    return res.status(200).send({ message: "User deleted successfully", user: deletedUser });
+    return res.status(200).send({ message: "Usuário removido com sucesso.", user: deletedUser });
   } catch (error) {
-    return res.status(400).send({ error: "An error has occurred, unable to delete user" });
+    return res.status(400).send({ error: "Ocorreu um erro inesperado, não foi possível remover o usuário." });
   }
 };
 
 exports.data = async (req, res) => {
   return res.json({
     posts: {
-      title: "User Authentication",
-      description: "random data you can access because you\'re authenticated",
+      title: "Autenticação de Usuário",
+      description: "Dados que só podem ser vistos devido à autenticação",
     },
   });
 };

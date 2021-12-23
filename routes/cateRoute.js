@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const cateController = require('../controllers/cateController')
-//const { verifyUser, verifyAdmin } = require("../middleware/verifyToken"); //new import
+//const { verifyUser, verifyAdmin } = require("../middleware/verifyToken"); //import novo
 
 router.post('/', cateController.createCategory);
 
