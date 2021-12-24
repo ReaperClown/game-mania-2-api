@@ -10,7 +10,7 @@ const cateSchema = mongoose.Schema(
       unique: true,
     }
   },
-  { timestamps: true } //to include createdAt and updatedAt
+  { timestamps: true } //inclui createdAt e updatedAt
 );
 
 module.exports = mongoose.model("Category", cateSchema);

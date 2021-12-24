@@ -9,9 +9,9 @@ router.post("/login", adminController.logIn)
 
 router.patch('/:userId', adminController.updateAdmin);
 
-router.delete('/:userId', adminController.deleteAdmin); //delete admin
+router.delete('/:userId', adminController.deleteAdmin); //deletar admin
 
-router.delete('/user/:userId', userController.deleteUser); //delete user
+router.delete('/user/:userId', userController.deleteUser); //deletar usuário
 
 router.get("/data", verifyAdmin, adminController.data)
 

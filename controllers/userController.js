@@ -9,7 +9,7 @@ const { registerValidation, loginValidation } = require("../middleware/validatio
 const JWT_KEY = process.env.JWT_KEY;
 
 
-// signup
+// registro
 exports.signUp = async (req, res, next) => {
   const { error, value } = registerValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -38,7 +38,7 @@ exports.logIn = async (req, res) => {
     const isMatch = await bcrypt.compareSync(req.body.password, foundUser.password);
     if (!isMatch) return res.status(400).send({ message: "Credenciais de login incorretas" });
 
-    // create and assign jwt
+    // cria e atribui jwt
     const token = await jwt.sign({ _id: foundUser._id }, JWT_KEY);
 
     return res.status(200).header("auth-token", token).send({ "auth-token": token, userId: foundUser._id });
@@ -47,7 +47,7 @@ exports.logIn = async (req, res) => {
   }
 };
 
-// Update user
+// Atualizar usuário
 exports.updateUser = async (req, res) => {
   try {
     req.body.password = bcrypt.hashSync(req.body.password, 10); //criptografa a senha antes de salvá-la
@@ -63,7 +63,7 @@ exports.updateUser = async (req, res) => {
   }
 };
 
-// Delete user
+// Remover usuário
 exports.deleteUser = async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.userId); // await para garantir a remoção correta e evitar erros
@@ -75,6 +75,13 @@ exports.deleteUser = async (req, res) => {
   } catch (error) {
     return res.status(400).send({ error: "Ocorreu um erro inesperado, não foi possível remover o usuário." });
   }
+};
+
+exports.getUsers = (req, res, next) => {
+  User.find({}, "_id name firstName lastName email createdAt updatedAt ",(error, users) => {
+    if (error) return res.status(400).send("Ocorreu um erro inesperado.", error);
+    return res.status(200).send({ message: "Mostrando lista de categorias", count: users.length, users, });
+  });
 };
 
 exports.data = async (req, res) => {

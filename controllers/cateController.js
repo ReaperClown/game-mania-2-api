@@ -22,3 +22,29 @@ exports.getCategories = (req, res, next) => {
   });
 };
 
+exports.deleteCategory = async (req, res) => {
+  try {
+    const deletedCategory = await Category.findByIdAndDelete({ _id: req.params.categId }); // await para garantir a remoção correta e evitar erros
+
+    if (!deletedCategory) {
+      return res.status(400).send({ message: "Não foi possível remover a categoria." });
+    }
+    return res.status(200).send({ message: "Categoria removida com sucesso.", category: deletedCategory });
+  } catch (error) {
+    return res.status(400).send({ error: "Ocorreu um erro inesperado, não foi possível remover a categoria." });
+  }
+};
+
+exports.updateCategory = async (req, res) => {
+  try {
+    const updatedCategory = await Category.findByIdAndUpdate(req.params.categId, { $set: req.body }, { new: true });
+
+    if (!updatedCategory) {
+      return res.status(400).send({ message: "Não foi possível atualizar a categoria." });
+    }
+    return res.status(200).send({ message: "Categoria atualizada com sucesso!", updatedCategory });
+
+  } catch (error) {
+    return res.status(400).send({ error: "Ocorreu um erro inesperado, não foi possível atualizar a categoria." });
+  }
+};

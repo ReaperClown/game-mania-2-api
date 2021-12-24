@@ -6,7 +6,7 @@ function registerValidation(data) {
     lastName: joi.string().min(4).required(),
     email: joi.string().min(6).email().required(),
     password: joi.string().min(4).required(),
-    phone: joi.string().min(10).max(10)
+    phone: joi.string().min(11).max(13)
   });
   return schema.validate(data);
 }
